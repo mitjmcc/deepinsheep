@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Sheep : MonoBehaviour {
 
+    public int points;
     Rigidbody body;
 
 	void Start () {

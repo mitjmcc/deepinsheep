@@ -39,15 +39,15 @@ public class Game : MonoBehaviour {
     /// increment there score
     /// </summary>
     /// <param name="team"></param> True for team 1, false for team2
-    public void Score(bool team) {
+    public void Score(bool team, int amt) {
         if (team)
         {
-            score1++;
+            score1 += amt;
             playerScoreText[0].text = "Score: " + score1;
         }
         else
         {
-            score2++;
+            score2 += amt;
             playerScoreText[1].text = "Score: " + score2;
         }
     }

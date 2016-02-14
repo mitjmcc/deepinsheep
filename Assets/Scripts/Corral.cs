@@ -23,7 +23,7 @@ public class Corral : MonoBehaviour {
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Sheep")
         {
-            game.Score(team == 1);
+            game.Score(team == 1, other.GetComponent<Sheep>().points);
             game.getDebugScore();
             Destroy(other.gameObject);
             game.CheckWin();
