@@ -81,8 +81,9 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(model.position,
             (cam.transform.position - model.position).normalized, out hit, distance)
             && hit.transform.tag != "Sheep" && hit.transform.tag != "Terrain")
-            cam.transform.position = hit.point + new Vector3(0, .1f, 0);
-
+        {
+            //cam.transform.position = hit.point + new Vector3(0, 1f, 0);
+        }
         //Player pushes sheep if hit button is pressed
         if (trig > 0)
             hitSheep();
@@ -107,7 +108,7 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(transform.position, model.forward, out hit, 5))
         {
             if (hit.transform.gameObject.tag == "Sheep")
-                hit.transform.gameObject.GetComponent<Rigidbody>().velocity = model.forward * 20;
+                hit.transform.gameObject.GetComponent<Sheep>().changeVelocity(model.forward * 20);
         }
     }
 }

@@ -7,12 +7,14 @@ public class Game : MonoBehaviour {
     public GameObject spawns;
     public GameObject players;
     public Text[] playerScoreText;
+    public Text timer;
 
+    public float matchTime;
     public int scoreMax = 9;
     public static int playerCount;
+
     int score1;
     int score2;
-
     private static Game instance;
 
     private Game() { }
@@ -28,11 +30,30 @@ public class Game : MonoBehaviour {
 	void Start() {
         Cursor.visible = false;
         SetPlayerNumbers();
-        
+        SetSplitSceen(true);
 	}
 	
 	void Update () {
+        UpdateTime();
 	}
+
+    /// <summary>
+    /// Decrement the match time
+    /// </summary>
+    private void UpdateTime()
+    {
+        //http://answers.unity3d.com/questions/905990/how-can-i-make-a-timer-with-the-new-ui-system.html
+        matchTime -= Time.deltaTime;
+
+        var minutes = matchTime / 60; //Divide the guiTime by sixty to get the minutes.
+        var seconds = matchTime % 60;//Use the euclidean division for the seconds.
+        var fraction = (matchTime * 100) % 100;
+
+        //update the label value
+        timer.text = string.Format("Time: {0:0} : {1:00}", minutes, seconds, fraction);
+
+        CheckWin();
+    }
 
     /// <summary>
     /// If a team scores by placing a sheep in their corral
@@ -66,21 +87,44 @@ public class Game : MonoBehaviour {
     /// </summary>
     public void CheckWin()
     {
-        if (score1 == scoreMax)
+        if (matchTime == 0 || score1 == scoreMax || score2 == scoreMax)
         {
-            Debug.Log("Team2 1 wins! Game over!");
-        } else if (score2 == scoreMax)
-        {
-            Debug.Log("Team 2 wins! Game over!");
+            if (score1 == scoreMax)
+            {
+                Debug.Log("Team2 1 wins! Game over!");
+            }
+            else if (score2 == scoreMax)
+            {
+                Debug.Log("Team 2 wins! Game over!");
+            }
         }
     }
 
+    /// <summary>
+    /// Gives each local player a number
+    /// </summary>
     public void SetPlayerNumbers()
     {
         playerCount = players.transform.childCount;
         for (int i = 0; i < playerCount; i++)
         {   
             players.transform.GetChild(i).GetComponent<PlayerController>().setPlayerNum(i);
+        }
+    }
+
+    /// <summary>
+    /// Switches between splitscreen and single player
+    /// </summary>
+    /// <param name="split"></param> Splitscreen or not
+    void SetSplitSceen(bool split)
+    {
+        Camera cam = players.transform.GetChild(0).GetComponentInChildren<Camera>();
+        Camera cam2 = players.transform.GetChild(1).GetComponentInChildren<Camera>();
+        if (!split) {
+            cam.pixelRect = new Rect(0, 0, Screen.width, Screen.height);
+            cam.fov = 70;
+        } else {
+            
         }
     }
 
