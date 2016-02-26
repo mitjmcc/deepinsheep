@@ -6,14 +6,6 @@ public class Corral : MonoBehaviour {
     public int team;
     public Game game;
 
-	void Start () {
-        
-	}
-	
-	void Update () {
-	
-	}
-
     /// <summary>
     /// Collects sheep
     /// If the corral belongs to the Sheperds, they score

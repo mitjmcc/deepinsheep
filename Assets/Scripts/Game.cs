@@ -15,6 +15,7 @@ public class Game : MonoBehaviour {
 
     int score1;
     int score2;
+    bool split;
     private static Game instance;
 
     private Game() { }
@@ -30,12 +31,17 @@ public class Game : MonoBehaviour {
 	void Start() {
         Cursor.visible = false;
         SetPlayerNumbers();
-        SetSplitSceen(true);
+        SetSplitSceen(split);
 	}
 	
 	void Update () {
         UpdateTime();
-	}
+        if (Input.GetKeyDown("/"))
+        {
+            SetSplitSceen(split);
+            split = !split;
+        }
+    }
 
     /// <summary>
     /// Decrement the match time
@@ -122,9 +128,11 @@ public class Game : MonoBehaviour {
         Camera cam2 = players.transform.GetChild(1).GetComponentInChildren<Camera>();
         if (!split) {
             cam.pixelRect = new Rect(0, 0, Screen.width, Screen.height);
-            cam.fov = 70;
+            cam.fieldOfView = 70;
+            GameObject.Find("Team 1 Score").GetComponent<RectTransform>().rect.Set(0, 0, 160, 54);
         } else {
-            
+            cam.pixelRect = new Rect(0, Screen.height / 2, Screen.width, Screen.height / 2);
+            cam.fieldOfView = 50;
         }
     }
 

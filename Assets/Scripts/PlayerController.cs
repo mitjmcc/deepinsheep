@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Simple third person controller with sheep wrangling capabilites.
@@ -12,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public float distance;
     public float hieght;
     public float xRot;
+    public float hitStrength;
 
     int player;
     int playerControl = 1;
@@ -39,7 +39,6 @@ public class PlayerController : MonoBehaviour
         model = transform.FindChild("Model");
         distance = -cam.transform.localPosition.z;
         hieght = cam.transform.localPosition.y;
-        xRot = cam.transform.localRotation.x;
     }
 
     void FixedUpdate()
@@ -108,7 +107,7 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(transform.position, model.forward, out hit, 5))
         {
             if (hit.transform.gameObject.tag == "Sheep")
-                hit.transform.gameObject.GetComponent<Sheep>().changeVelocity(model.forward * 20);
+                hit.transform.gameObject.GetComponent<Sheep>().changeVelocity(model.forward * hitStrength);
         }
     }
 }
