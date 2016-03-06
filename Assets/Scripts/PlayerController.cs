@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Simple third person controller with sheep wrangling capabilites.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
-
 {
     public float moveForce;
     public float distance;
     public float hieght;
     public float xRot;
-    public float hitStrength;
+    public float isGroundedDist;
 
-    int player;
+    public int player;
     int playerControl = 1;
 
     float lookSpeed = 50;
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     Camera cam;
     Transform model;
     Vector3 velocity;
-    Vector3 grav = new Vector3(0, Physics.gravity.y, 0);
+    Vector3 grav = new Vector3(0, Physics.gravity.y * 2, 0);
 
     void Start()
     {
@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
         model = transform.FindChild("Model");
         distance = -cam.transform.localPosition.z;
         hieght = cam.transform.localPosition.y;
+        xRot = cam.transform.localRotation.x;
     }
 
     void FixedUpdate()
@@ -50,17 +51,27 @@ public class PlayerController : MonoBehaviour
         //Project camera direction onto xz-plane
         Vector3 camForward = Vector3.Scale(cam.transform.forward, new Vector3(1, 0, 1)).normalized;
 
-
-        //Create velocity vector and scake it by the speed
-        velocity = dx * camForward + dz * cam.transform.right + grav;
+        //Create velocity vector and scale it by the speed
+        Vector3 desiredVelocity = dx * camForward + dz * cam.transform.right + new Vector3(0, body.velocity.y, 0);
 
         //Set the velocity to the new velocity
-        body.velocity = velocity;
+        Vector3 addVec = desiredVelocity - body.velocity;
+        float mag = addVec.magnitude;
+        if (this.isOnGround())
+            mag = Mathf.Min(mag, moveForce);
+        else
+            mag = Mathf.Min(mag, moveForce * 0.25f);
+        //if(this.player == 0)
+        //	print(mag.ToString() + " " + this.isOnGround());
+        addVec = addVec.normalized * mag;
+        //body.velocity += grav * Time.fixedDeltaTime;
+        body.velocity += addVec;
 
         transform.forward = Vector3.Lerp(transform.forward, (dx * camForward + dz * cam.transform.right).normalized, .4f);
     }
 
-    void Update() {
+    void Update()
+    {
         //Get inputs from the camera inputs and the hit button
         x += Input.GetAxis("Look Horizontal " + (player)) * lookSpeed * distance * 0.02f * playerControl;
         var trig = Input.GetAxis("Hit " + (player));
@@ -95,19 +106,29 @@ public class PlayerController : MonoBehaviour
 
     /// <summary>Set whether the players can move or not</summary>
     /// <param name="i">1 for movement, 0 for no movement</param>
-    public void setPlayerControl(int i) {
+    public void setPlayerControl(int i)
+    {
         playerControl = i;
     }
 
     /// <summary>
     /// Call when the player is hitting a sheep
     /// </summary>
-    void hitSheep() {
+    void hitSheep()
+    {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, model.forward, out hit, 5))
         {
             if (hit.transform.gameObject.tag == "Sheep")
-                hit.transform.gameObject.GetComponent<Sheep>().changeVelocity(model.forward * hitStrength);
+                hit.transform.gameObject.GetComponent<Sheep>().changeVelocity(model.forward * 20);
         }
+    }
+
+    bool isOnGround()
+    {
+        RaycastHit dontcare = new RaycastHit(); //Doesn't seem to be possible to skip this parameter in the collider raycast
+        bool hit = Physics.Raycast(new Ray(this.transform.position, new Vector3(0, -1, 0)), out dontcare, isGroundedDist);//this.GetComponent<CapsuleCollider>().height + 0.4f);
+        //Debug.DrawRay(this.transform.position, new Vector3(0, -isGroundedDist, 0));
+        return hit;
     }
 }

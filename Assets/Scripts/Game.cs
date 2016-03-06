@@ -129,10 +129,12 @@ public class Game : MonoBehaviour {
         if (!split) {
             cam.pixelRect = new Rect(0, 0, Screen.width, Screen.height);
             cam.fieldOfView = 70;
+            cam2.pixelRect = new Rect(0, 0, 0, 0);
             GameObject.Find("Team 1 Score").GetComponent<RectTransform>().rect.Set(0, 0, 160, 54);
         } else {
             cam.pixelRect = new Rect(0, Screen.height / 2, Screen.width, Screen.height / 2);
             cam.fieldOfView = 50;
+            cam2.pixelRect = new Rect(0, 0, Screen.width, Screen.height / 2);
         }
     }
 

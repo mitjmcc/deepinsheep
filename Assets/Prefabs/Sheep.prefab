@@ -197,7 +197,7 @@ Animation:
   m_Animation: {fileID: 7400000, guid: de9121f042c4aa041a04e3f2daaaa628, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: de9121f042c4aa041a04e3f2daaaa628, type: 2}
-  - {fileID: 7400000, guid: 7abfd6e2b06aa8b43b8c9605fad17440, type: 2}
+  - {fileID: 7400000, guid: f2dbf6fc4daab934a9d72b59f4fdf05a, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
@@ -226,6 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points: 1
+  radius: 2
 --- !u!136 &13605786
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -341,6 +342,14 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: range
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Animations.Array.data[1]
+      value: 
+      objectReference: {fileID: 7400000, guid: f2dbf6fc4daab934a9d72b59f4fdf05a, type: 2}
+    - target: {fileID: 0}
+      propertyPath: radius
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
