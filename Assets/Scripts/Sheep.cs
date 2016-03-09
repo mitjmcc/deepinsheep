@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Sheep : MonoBehaviour {
 
@@ -10,7 +9,6 @@ public class Sheep : MonoBehaviour {
 	AudioSource audioSource;
     Agent agent;
     State state;
-    bool hit;
     int chance;
 
 	void Start () {
@@ -27,9 +25,7 @@ public class Sheep : MonoBehaviour {
         //Check if the sheep is not upright and is not moving
         //Then lerp it back upright it and set any remainging velocities to zero
         if (body.velocity.magnitude < 2f && transform.up != Vector3.up) {
-            transform.up = Vector3.Lerp(transform.up, Vector3.up, .25f);
-            body.velocity = Vector3.zero;
-            body.angularVelocity = Vector3.zero;
+            ReErect();
             if (IsPlayerNear())
                 state = State.RUN;
             else
@@ -52,6 +48,13 @@ public class Sheep : MonoBehaviour {
     public void changeVelocity(Vector3 velocity) {
         state = State.HIT;
         body.velocity = velocity;
+    }
+
+    void ReErect()
+    {
+        transform.up = Vector3.Lerp(transform.up, Vector3.up, .25f);
+        body.velocity = Vector3.zero;
+        body.angularVelocity = Vector3.zero;
     }
 
 	void baa() {
@@ -103,7 +106,7 @@ public class Sheep : MonoBehaviour {
                 break;
             case State.RUN:
                 anim.Play("SheepRun");
-                Debug.Log("I'm scared!");
+                //Debug.Log("I'm scared!");
                 if (Random.Range(1, 100) > (chance / 2) && !IsPlayerNear())
                 {
                     state = State.GRAZE;

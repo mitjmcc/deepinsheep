@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Timer : MonoBehaviour {
     private float targetTime = 60.0f;

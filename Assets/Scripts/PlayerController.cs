@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Simple third person controller with sheep wrangling capabilites.
@@ -9,16 +8,22 @@ public class PlayerController : MonoBehaviour
 {
     public float moveForce;
     public float distance;
-    public float hieght;
+    public float height;
     public float xRot;
     public float isGroundedDist;
+    public float groundStickForce;
 
     public int player;
+
+    private float groundedTimeout;
+    private float airControlTimeout;
+
+    Animator animator;
+
     int playerControl = 1;
 
     float lookSpeed = 50;
     float x = 0.0f;
-    float y = 0.0f;
     float dx;
     float dy;
     float dz;
@@ -27,7 +32,7 @@ public class PlayerController : MonoBehaviour
     Camera cam;
     Transform model;
     Vector3 velocity;
-    Vector3 grav = new Vector3(0, Physics.gravity.y * 2, 0);
+    //Vector3 grav = new Vector3(0, Physics.gravity.y * 2, 0);
 
     void Start()
     {
@@ -38,21 +43,25 @@ public class PlayerController : MonoBehaviour
         Debug.Assert(transform.Find("Model"));
         model = transform.FindChild("Model");
         distance = -cam.transform.localPosition.z;
-        hieght = cam.transform.localPosition.y;
+        height = cam.transform.localPosition.y;
         xRot = cam.transform.localRotation.x;
+        groundedTimeout = -1000;
+        airControlTimeout = -1000;
+        animator = model.GetComponent<Animator>();
     }
 
     void FixedUpdate()
     {
         //Get move inputs and scale the move speed by the axis values
-        dx = Input.GetAxis("Move Vertical " + (player)) * moveForce * playerControl;
-        dz = Input.GetAxis("Move Horizontal " + (player)) * moveForce * playerControl;
-
+        dx = Input.GetAxisRaw("Move Vertical " + (player));
+        dz = Input.GetAxisRaw("Move Horizontal " + (player));
         //Project camera direction onto xz-plane
         Vector3 camForward = Vector3.Scale(cam.transform.forward, new Vector3(1, 0, 1)).normalized;
 
+        Vector3 spd = Vector3.Normalize(dx * camForward + dz * cam.transform.right) * moveForce * playerControl;
+
         //Create velocity vector and scale it by the speed
-        Vector3 desiredVelocity = dx * camForward + dz * cam.transform.right + new Vector3(0, body.velocity.y, 0);
+        Vector3 desiredVelocity = (spd) + new Vector3(0, body.velocity.y, 0);
 
         //Set the velocity to the new velocity
         Vector3 addVec = desiredVelocity - body.velocity;
@@ -60,26 +69,34 @@ public class PlayerController : MonoBehaviour
         if (this.isOnGround())
             mag = Mathf.Min(mag, moveForce);
         else
-            mag = Mathf.Min(mag, moveForce * 0.25f);
+        {
+            if (this.airControlTimeout < Time.fixedTime)
+                mag = Mathf.Min(mag, moveForce * 0.2f);
+            else
+                mag = 0;
+        }
         //if(this.player == 0)
-        //	print(mag.ToString() + " " + this.isOnGround());
+        //	print(this.isOnGround());
         addVec = addVec.normalized * mag;
         //body.velocity += grav * Time.fixedDeltaTime;
         body.velocity += addVec;
+        if (this.isOnGround())
+            body.velocity += new Vector3(0, -this.groundStickForce, 0);
 
         transform.forward = Vector3.Lerp(transform.forward, (dx * camForward + dz * cam.transform.right).normalized, .4f);
+        animator.SetBool("run", body.velocity.magnitude > 5);
     }
 
     void Update()
     {
         //Get inputs from the camera inputs and the hit button
-        x += Input.GetAxis("Look Horizontal " + (player)) * lookSpeed * distance * 0.02f * playerControl;
+        x += Input.GetAxisRaw("Look Horizontal " + (player)) * lookSpeed * distance * 0.02f * playerControl;
         var trig = Input.GetAxis("Hit " + (player));
 
         //Calculate the rotation using Euler angles,
         //get distance from player, calculate camera position
         Quaternion rotation = Quaternion.Euler(xRot, x, 0);
-        Vector3 negDistance = new Vector3(0.0f, hieght, -distance);
+        Vector3 negDistance = new Vector3(0.0f, height, -distance);
         Vector3 position = rotation * negDistance + model.position;
 
         //Set the camera's new rotation and position
@@ -112,6 +129,15 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
+    /// Use when launching the player into the air to cancel forces adhering them to the ground
+    /// </summary>
+    public void setGroundedTimeout()
+    {
+        this.groundedTimeout = Time.fixedTime + 0.6f;
+        this.airControlTimeout = Time.fixedTime + 2.0f;
+    }
+
+    /// <summary>
     /// Call when the player is hitting a sheep
     /// </summary>
     void hitSheep()
@@ -126,6 +152,8 @@ public class PlayerController : MonoBehaviour
 
     bool isOnGround()
     {
+        if (this.groundedTimeout > Time.fixedTime)
+            return false;
         RaycastHit dontcare = new RaycastHit(); //Doesn't seem to be possible to skip this parameter in the collider raycast
         bool hit = Physics.Raycast(new Ray(this.transform.position, new Vector3(0, -1, 0)), out dontcare, isGroundedDist);//this.GetComponent<CapsuleCollider>().height + 0.4f);
         //Debug.DrawRay(this.transform.position, new Vector3(0, -isGroundedDist, 0));

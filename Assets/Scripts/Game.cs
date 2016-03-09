@@ -8,6 +8,7 @@ public class Game : MonoBehaviour {
     public GameObject players;
     public Text[] playerScoreText;
     public Text timer;
+    public Texture2D cursor;
 
     public float matchTime;
     public int scoreMax = 9;
@@ -16,6 +17,7 @@ public class Game : MonoBehaviour {
     int score1;
     int score2;
     bool split;
+    bool paused;
     private static Game instance;
 
     private Game() { }
@@ -30,16 +32,60 @@ public class Game : MonoBehaviour {
 
 	void Start() {
         Cursor.visible = false;
+        Cursor.SetCursor(cursor, new Vector2(0, 0), CursorMode.ForceSoftware);
         SetPlayerNumbers();
         SetSplitSceen(split);
 	}
 	
 	void Update () {
         UpdateTime();
+        if (Input.GetKeyDown("escape"))
+        {
+            PauseGame(!paused);
+            paused = !paused;
+        }
         if (Input.GetKeyDown("/"))
         {
             SetSplitSceen(split);
             split = !split;
+        }
+        CheckWin();
+    }
+
+    public void PauseGame(bool paused)
+    {
+        if (paused)
+        {
+            Time.timeScale = 0;
+            SetPlayerControl(false);
+            Cursor.visible = true;
+        }
+        else
+        {
+            Time.timeScale = 1;
+            SetPlayerControl(true);
+            Cursor.visible = false;
+        }
+    }
+
+    /// <summary>
+    /// Set if the players can move or not
+    /// </summary>
+    /// <param name="control"></param> True for movement
+    public void SetPlayerControl(bool control)
+    {
+        if (control)
+        {
+            foreach (PlayerController player in players.GetComponentsInChildren<PlayerController>())
+            {
+                player.setPlayerControl(1);
+            }
+        } else
+        {
+            foreach (PlayerController player in players.GetComponentsInChildren<PlayerController>())
+            {
+                player.setPlayerControl(0);
+            }
         }
     }
 
@@ -55,10 +101,15 @@ public class Game : MonoBehaviour {
         var seconds = matchTime % 60;//Use the euclidean division for the seconds.
         var fraction = (matchTime * 100) % 100;
 
+        if (minutes == 0 && seconds < 11)
+        {
+            timer.GetComponent<Animation>().wrapMode = WrapMode.Loop;
+            timer.GetComponent<Animation>().Play();
+        }
+
         //update the label value
         timer.text = string.Format("Time: {0:0} : {1:00}", minutes, seconds, fraction);
 
-        CheckWin();
     }
 
     /// <summary>
@@ -71,21 +122,23 @@ public class Game : MonoBehaviour {
         {
             score1 += amt;
             playerScoreText[0].text = "Score: " + score1;
+            textBounce(playerScoreText[0]);
         }
         else
         {
             score2 += amt;
             playerScoreText[1].text = "Score: " + score2;
+            textBounce(playerScoreText[1]);
         }
     }
 
-    private void textBounce(Text t)
+    /// <summary>
+    /// Activate text animation
+    /// </summary>
+    /// <param name="text"></param> a text object with an animation component
+    private void textBounce(Text text)
     {
-        Vector2 old = t.rectTransform.sizeDelta;
-        Vector2 n = new Vector2(t.rectTransform.rect.width + 5,
-            t.rectTransform.rect.height + 5);
-        t.rectTransform.sizeDelta = Vector2.Lerp(t.rectTransform.sizeDelta, n, .1f);
-        t.rectTransform.sizeDelta = Vector2.Lerp(n, old, .1f);
+        text.transform.GetComponent<Animation>().Play();
     }
 
     /// <summary>
@@ -103,6 +156,7 @@ public class Game : MonoBehaviour {
             {
                 Debug.Log("Team 2 wins! Game over!");
             }
+            Time.timeScale = 0;
         }
     }
 
