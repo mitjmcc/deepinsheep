@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private float airControlTimeout;
 
     Animator animator;
+    ParticleSystem dust;
 
     int playerControl = 1;
 
@@ -48,6 +49,7 @@ public class PlayerController : MonoBehaviour
         groundedTimeout = -1000;
         airControlTimeout = -1000;
         animator = model.GetComponent<Animator>();
+        dust = GetComponentInChildren<ParticleSystem>();
     }
 
     void FixedUpdate()
@@ -84,7 +86,10 @@ public class PlayerController : MonoBehaviour
             body.velocity += new Vector3(0, -this.groundStickForce, 0);
 
         transform.forward = Vector3.Lerp(transform.forward, (dx * camForward + dz * cam.transform.right).normalized, .4f);
+
+        //Modify states depending on whether model is moving
         animator.SetBool("run", body.velocity.magnitude > 5);
+        DustParticles();
     }
 
     void Update()
@@ -158,5 +163,16 @@ public class PlayerController : MonoBehaviour
         bool hit = Physics.Raycast(new Ray(this.transform.position, new Vector3(0, -1, 0)), out dontcare, isGroundedDist);//this.GetComponent<CapsuleCollider>().height + 0.4f);
         //Debug.DrawRay(this.transform.position, new Vector3(0, -isGroundedDist, 0));
         return hit;
+    }
+
+    void DustParticles()
+    {
+        if (body.velocity.magnitude > 5)
+        {
+            dust.enableEmission = true;
+        } else
+        {
+            dust.enableEmission = false;
+        }
     }
 }
