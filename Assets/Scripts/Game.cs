@@ -11,7 +11,7 @@ public class Game : MonoBehaviour {
     public Texture2D cursor;
 
     public float matchTime;
-    public int scoreMax = 9;
+    public int scoreMax;
     public static int playerCount;
 
     int score1;
@@ -36,20 +36,23 @@ public class Game : MonoBehaviour {
         SetPlayerNumbers();
         SetSplitSceen(split);
 	}
-	
+
 	void Update () {
-        UpdateTime();
         if (Input.GetKeyDown("escape"))
         {
             PauseGame(!paused);
             paused = !paused;
         }
-        if (Input.GetKeyDown("/"))
-        {
-            SetSplitSceen(split);
-            split = !split;
+        if (!paused) {
+            UpdateTime();
+
+            if (Input.GetKeyDown("/"))
+            {
+                SetSplitSceen(split);
+                split = !split;
+            }
+            CheckWin();
         }
-        CheckWin();
     }
 
     public void PauseGame(bool paused)
@@ -116,17 +119,17 @@ public class Game : MonoBehaviour {
     /// If a team scores by placing a sheep in their corral
     /// increment there score
     /// </summary>
-    /// <param name="team"></param> True for team 1, false for team2
+    /// <param name="team"></param> True for team 1, false for team 2
     public void Score(bool team, int amt) {
         if (team)
         {
-            score1 += amt;
+            score1 = Mathf.Clamp(score1 + amt, 0, score1 + amt);
             playerScoreText[0].text = "Score: " + score1;
             textBounce(playerScoreText[0]);
         }
         else
         {
-            score2 += amt;
+            score2 = Mathf.Clamp(score2 + amt, 0, score2 + amt);
             playerScoreText[1].text = "Score: " + score2;
             textBounce(playerScoreText[1]);
         }
@@ -146,7 +149,7 @@ public class Game : MonoBehaviour {
     /// </summary>
     public void CheckWin()
     {
-        if (matchTime == 0 || score1 == scoreMax || score2 == scoreMax)
+        if (matchTime <= 0 || score1 == scoreMax || score2 == scoreMax)
         {
             if (score1 == scoreMax)
             {
@@ -156,7 +159,7 @@ public class Game : MonoBehaviour {
             {
                 Debug.Log("Team 2 wins! Game over!");
             }
-            Time.timeScale = 0;
+            PauseGame(true);
         }
     }
 
@@ -167,7 +170,7 @@ public class Game : MonoBehaviour {
     {
         playerCount = players.transform.childCount;
         for (int i = 0; i < playerCount; i++)
-        {   
+        {
             players.transform.GetChild(i).GetComponent<PlayerController>().setPlayerNum(i);
         }
     }

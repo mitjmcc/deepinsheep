@@ -167,6 +167,7 @@ public class PlayerController : MonoBehaviour
 
     void DustParticles()
     {
+        
         if (body.velocity.magnitude > 5)
         {
             dust.enableEmission = true;

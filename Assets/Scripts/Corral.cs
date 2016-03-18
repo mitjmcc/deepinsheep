@@ -5,6 +5,7 @@ public class Corral : MonoBehaviour
 
     public int team;
     public Game game;
+	public SheepExploder scoreEffect;
 
     /// <summary>
     /// Collects sheep
@@ -16,7 +17,8 @@ public class Corral : MonoBehaviour
         if (other.gameObject.tag == "Sheep")
         {
             game.Score(team == 1, other.GetComponent<Sheep>().points);
-            game.getDebugScore();
+			game.getDebugScore();
+			Instantiate(scoreEffect.gameObject, other.transform.position, Quaternion.LookRotation(other.attachedRigidbody.velocity));
             Destroy(other.gameObject);
             game.CheckWin();
         }
@@ -24,6 +26,7 @@ public class Corral : MonoBehaviour
         {
             game.Score(team == 1, 1);
             game.getDebugScore();
+			Instantiate(scoreEffect.gameObject, other.transform.position, Quaternion.LookRotation(other.attachedRigidbody.velocity));
             //other.transform.position = new Vector3(-2.907191f, 10f, -85f);
             other.GetComponent<PlayerController>().setGroundedTimeout();
             other.attachedRigidbody.velocity = ((other.attachedRigidbody.position - this.transform.position).normalized + new Vector3(0, 0.1f, 0)) * 45;
