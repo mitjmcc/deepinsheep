@@ -160,7 +160,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 3380da8c7110b8f45a10f65267f7a04c, type: 3}
+  m_audioClip: {fileID: 8300000, guid: dc5562a32f51e2f4f8331dcdb22057c4, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -451,7 +451,7 @@ ParticleSystem:
         rgba: 4294967295
       maxColor:
         serializedVersion: 2
-        rgba: 3170894079
+        rgba: 3170957567
       minMaxState: 0
     startSize:
       scalar: 0.5
@@ -7944,10 +7944,14 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: 3380da8c7110b8f45a10f65267f7a04c, type: 3}
+      objectReference: {fileID: 8300000, guid: dc5562a32f51e2f4f8331dcdb22057c4, type: 3}
     - target: {fileID: 0}
       propertyPath: spreadCustomCurve.m_RotationOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: InitialModule.startColor.maxColor.rgba
+      value: 3170957567
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

@@ -14,6 +14,8 @@ public class Game : MonoBehaviour {
     public int scoreMax;
     public static int playerCount;
 
+    Image bluePlank;
+    Camera cam, cam2;
     int score1;
     int score2;
     bool split;
@@ -33,11 +35,14 @@ public class Game : MonoBehaviour {
 	void Start() {
         Cursor.visible = false;
         Cursor.SetCursor(cursor, new Vector2(0, 0), CursorMode.ForceSoftware);
+        bluePlank = GameObject.Find("blueScorePlank").GetComponent<Image>();
+        cam = players.transform.GetChild(0).GetComponentInChildren<Camera>();
+        cam2 = players.transform.GetChild(1).GetComponentInChildren<Camera>();
         SetPlayerNumbers();
         SetSplitSceen(split);
 	}
 
-	void Update () {
+	void FixedUpdate () {
         if (Input.GetKeyDown("escape"))
         {
             PauseGame(!paused);
@@ -100,19 +105,19 @@ public class Game : MonoBehaviour {
         //http://answers.unity3d.com/questions/905990/how-can-i-make-a-timer-with-the-new-ui-system.html
         matchTime -= Time.deltaTime;
 
-        var minutes = matchTime / 60; //Divide the guiTime by sixty to get the minutes.
-        var seconds = matchTime % 60;//Use the euclidean division for the seconds.
+        //Divide the guiTime by sixty to get the minutes.
+        var minutes = matchTime / 60;
+        //Use the euclidean division for the seconds.
+        var seconds = matchTime % 60;
         var fraction = (matchTime * 100) % 100;
 
-        if (minutes == 0 && seconds < 11)
+        //update the label value
+        timer.text = string.Format("{0:0}:{1:00}", minutes, seconds, fraction);
+        if (matchTime - (int)matchTime <= 0.01f)
         {
-            timer.GetComponent<Animation>().wrapMode = WrapMode.Loop;
+            //timer.GetComponent<Animation>().wrapMode = WrapMode.Loop;
             timer.GetComponent<Animation>().Play();
         }
-
-        //update the label value
-        timer.text = string.Format("Time: {0:0} : {1:00}", minutes, seconds, fraction);
-
     }
 
     /// <summary>
@@ -120,17 +125,17 @@ public class Game : MonoBehaviour {
     /// increment there score
     /// </summary>
     /// <param name="team"></param> True for team 1, false for team 2
-    public void Score(bool team, int amt) {
-        if (team)
+    public void Score(int team, int amt) {
+        if (team == 1)
         {
             score1 = Mathf.Clamp(score1 + amt, 0, score1 + amt);
-            playerScoreText[0].text = "Score: " + score1;
+            playerScoreText[0].text = "" + score1;
             textBounce(playerScoreText[0]);
         }
         else
         {
             score2 = Mathf.Clamp(score2 + amt, 0, score2 + amt);
-            playerScoreText[1].text = "Score: " + score2;
+            playerScoreText[1].text = "" + score2;
             textBounce(playerScoreText[1]);
         }
     }
@@ -151,11 +156,11 @@ public class Game : MonoBehaviour {
     {
         if (matchTime <= 0 || score1 == scoreMax || score2 == scoreMax)
         {
-            if (score1 == scoreMax)
+            if (score1 >= scoreMax)
             {
                 Debug.Log("Team2 1 wins! Game over!");
             }
-            else if (score2 == scoreMax)
+            else if (score2 >= scoreMax)
             {
                 Debug.Log("Team 2 wins! Game over!");
             }
@@ -180,17 +185,19 @@ public class Game : MonoBehaviour {
     /// </summary>
     /// <param name="split"></param> Splitscreen or not
     void SetSplitSceen(bool split)
-    {
-        Camera cam = players.transform.GetChild(0).GetComponentInChildren<Camera>();
-        Camera cam2 = players.transform.GetChild(1).GetComponentInChildren<Camera>();
+    { 
         if (!split) {
             cam.pixelRect = new Rect(0, 0, Screen.width, Screen.height);
             cam.fieldOfView = 70;
             cam2.pixelRect = new Rect(0, 0, 0, 0);
+            bluePlank.enabled = false;
+            //playerScoreText[1].enabled = false;
         } else {
             cam.pixelRect = new Rect(0, Screen.height / 2, Screen.width, Screen.height / 2);
             cam.fieldOfView = 50;
             cam2.pixelRect = new Rect(0, 0, Screen.width, Screen.height / 2);
+            bluePlank.enabled = true;
+            //playerScoreText[1].enabled = true;
         }
     }
 

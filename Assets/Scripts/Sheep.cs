@@ -8,6 +8,7 @@ public class Sheep : MonoBehaviour {
     Rigidbody body;
 	AudioSource audioSource;
     Agent agent;
+    Vector3 corralLoc;
     State state;
     int chance;
 
@@ -43,6 +44,17 @@ public class Sheep : MonoBehaviour {
         {
             state = State.HIT;
         }
+    }
+
+    public void SetCorralled()
+    {
+        state = State.CORRALLED;
+        corralLoc = transform.localPosition;
+    }
+
+    public void toggleSheepMovement()
+    {
+        GetComponent<NavMeshAgent>().enabled = false;
     }
 
     public void changeVelocity(Vector3 velocity) {
@@ -112,6 +124,11 @@ public class Sheep : MonoBehaviour {
                     state = State.GRAZE;
                 }
                 break;
+            case State.CORRALLED:
+                anim.Stop();
+                transform.localPosition = corralLoc;
+                state = State.CORRALLED;
+                break;
             default:
                 //Re-enable the nav mesh agent in case it had been disabled by being hit
                 GetComponent<NavMeshAgent>().enabled = true;
@@ -134,5 +151,5 @@ public class Sheep : MonoBehaviour {
         return false;
     }
 
-    private enum State {WANDER, GRAZE, RUN, HIT};
+    private enum State {WANDER, GRAZE, RUN, HIT, CORRALLED};
 }
