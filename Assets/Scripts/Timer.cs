@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
 public class Timer : MonoBehaviour {
+
     private float targetTime = 60.0f;
     private float timeRemaining = 10.0f;
     private bool isStillCountingDown = false;
+    bool paused;
+
 	// Use this for initialization
 	void Start () {
         if (!isStillCountingDown)
@@ -13,7 +16,7 @@ public class Timer : MonoBehaviour {
         }
 	}
 	
-     public void setTimeRemaining(float aFloat)
+    public void setTimeRemaining(float aFloat)
     {
         targetTime = aFloat;
     }
@@ -22,6 +25,7 @@ public class Timer : MonoBehaviour {
     {
         return timeRemaining;
     }
+
     public bool isTimeRemaining()
     {
         return isStillCountingDown;
@@ -36,13 +40,15 @@ public class Timer : MonoBehaviour {
             CancelInvoke("tick");
         }
     }
+
     private void stopTimer()
     {
-
+        paused = !paused;
     }
+
 	// Update is called once per frame
 	void Update () {
-        if(isStillCountingDown)
+        if(isStillCountingDown && !paused)
         {
             Debug.Log(timeRemaining);
             tick();

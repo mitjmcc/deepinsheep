@@ -22,7 +22,7 @@ public class Corral : MonoBehaviour
     {
         if (other.gameObject.tag == "Sheep")
         {
-            game.Score(1, other.GetComponent<Sheep>().points);
+            game.Score(team, other.GetComponent<Sheep>().points);
 			game.getDebugScore();
 			Instantiate(scoreEffect.gameObject, other.transform.position, Quaternion.LookRotation(other.attachedRigidbody.velocity));
             other.transform.SetParent(transform);
@@ -34,7 +34,7 @@ public class Corral : MonoBehaviour
         }
         if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayerController>().player + 1 != this.team)
         {
-            game.Score(1, 1);
+            game.Score(team, 1);
             game.getDebugScore();
 			Instantiate(scoreEffect.gameObject, other.transform.position, Quaternion.LookRotation(other.attachedRigidbody.velocity));
             //other.transform.position = new Vector3(-2.907191f, 10f, -85f);

@@ -55,32 +55,27 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         //Get move inputs and scale the move speed by the axis values
-        dx = Input.GetAxisRaw("Move Vertical " + (player));
-        dz = Input.GetAxisRaw("Move Horizontal " + (player));
+        dx = Input.GetAxisRaw("Move Vertical " + (player)) * playerControl;
+        dz = Input.GetAxisRaw("Move Horizontal " + (player)) * playerControl;
         //Project camera direction onto xz-plane
         Vector3 camForward = Vector3.Scale(cam.transform.forward, new Vector3(1, 0, 1)).normalized;
-
+        //Calculate the motion direction vector and scale it by the moveForce
         Vector3 spd = Vector3.Normalize(dx * camForward + dz * cam.transform.right) * moveForce * playerControl;
-
         //Create velocity vector and scale it by the speed
         Vector3 desiredVelocity = (spd) + new Vector3(0, body.velocity.y, 0);
-
         //Set the velocity to the new velocity
         Vector3 addVec = desiredVelocity - body.velocity;
         float mag = addVec.magnitude;
         if (this.isOnGround())
-            mag = Mathf.Min(mag, moveForce);
+            mag = Mathf.Min(mag, moveForce) * playerControl;
         else
         {
             if (this.airControlTimeout < Time.fixedTime)
-                mag = Mathf.Min(mag, moveForce * 0.2f);
+                mag = Mathf.Min(mag, moveForce * 0.2f) * playerControl;
             else
                 mag = 0;
         }
-        //if(this.player == 0)
-        //	print(this.isOnGround());
         addVec = addVec.normalized * mag;
-        //body.velocity += grav * Time.fixedDeltaTime;
         body.velocity += addVec;
         if (this.isOnGround())
             body.velocity += new Vector3(0, -this.groundStickForce, 0);
@@ -131,6 +126,13 @@ public class PlayerController : MonoBehaviour
     public void setPlayerControl(int i)
     {
         playerControl = i;
+    }
+
+    /// <summary>Get whether the players can move or not</summary>
+    /// <param name="i">1 for movement, 0 for no movement</param>
+    public int GetPlayerControl()
+    {
+       return playerControl;
     }
 
     /// <summary>
