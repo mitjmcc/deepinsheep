@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Green 1
-  m_Shader: {fileID: 4800000, guid: 48dca5b99d113b8d11006bab44295342, type: 3}
+  m_Shader: {fileID: 4800000, guid: 054a31a99d11e49d110086ba44295342, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: 2000
@@ -38,7 +38,21 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
+          name: _Ramp
+        second:
+          m_Texture: {fileID: 2800000, guid: e62a0fe59cdbd9b42a074d9d5dca6465, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
           name: _ParallaxMap
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ToonShade
         second:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
@@ -80,20 +94,6 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _Ramp
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _ToonShade
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
           name: _ReflectionTex
         second:
           m_Texture: {fileID: 0}
@@ -120,6 +120,10 @@ Material:
         first:
           name: _Smoothness
         second: 0.5
+      data:
+        first:
+          name: _Outline
+        second: 0.0045
       data:
         first:
           name: _Parallax
@@ -158,8 +162,8 @@ Material:
         second: 0
       data:
         first:
-          name: _Outline
-        second: 0.0045
+          name: _EdgeLength
+        second: 10
       data:
         first:
           name: _FresnelScale
@@ -168,10 +172,6 @@ Material:
         first:
           name: _GerstnerIntensity
         second: 1
-      data:
-        first:
-          name: _EdgeLength
-        second: 10
     m_Colors:
       data:
         first:
@@ -180,7 +180,7 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 0.06465517, g: 0.5514706, b: 0, a: 1}
+        second: {r: 0.24652787, g: 0.63235295, b: 0.19528547, a: 1}
       data:
         first:
           name: _SpecColor

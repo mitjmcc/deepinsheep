@@ -3,7 +3,7 @@
 public class Timer : MonoBehaviour {
 
     private float targetTime = 60.0f;
-    private float timeRemaining = 10.0f;
+    public float timeRemaining = 10.0f;
     private bool isStillCountingDown = false;
     bool paused;
 
@@ -28,7 +28,7 @@ public class Timer : MonoBehaviour {
 
     public bool isTimeRemaining()
     {
-        return isStillCountingDown;
+        return timeRemaining < 0;
     }
 
     private void tick()
@@ -50,7 +50,6 @@ public class Timer : MonoBehaviour {
 	void Update () {
         if(isStillCountingDown && !paused)
         {
-            Debug.Log(timeRemaining);
             tick();
         }
 	}

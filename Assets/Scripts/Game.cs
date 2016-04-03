@@ -7,22 +7,25 @@ public class Game : MonoBehaviour {
     public GameObject players, corrals;
     public string menu;
     public Camera winCam;
-    public Camera winCam2;
-    public Text timer;
+    public Camera winCam2, startCam;
+    public Text[] timer;
     public Text[] playerScoreText;
     public Text[] playerWinText;
     public Image[] scoreGUI;
+    public Image[] barnDoors;
     public Texture2D cursor;
 
     public float matchTime;
     public int scoreMax;
     public static int playerCount;
 
+    State state;
     Camera cam, cam2;
     Vector3 camTarget1, camTarget2, winSpot1, winSpot2;
     GameObject player1, player2;
+    Timer clock;
     int score1, score2, winTeam;
-    bool split, paused, gameover;
+    bool split, gameover;
     string nextScene;
     private static Game instance;
 
@@ -51,28 +54,97 @@ public class Game : MonoBehaviour {
         winSpot1 = corrals.transform.GetChild(0).transform.position + new Vector3(10, 1.07f, 0);
         camTarget2 = winCam2.transform.position + new Vector3(3, 0, 0);
         winSpot2 = corrals.transform.GetChild(1).transform.position + new Vector3(-10, 1.07f, 0);
-
+        //Initialize a clock
+        clock = GetComponent<Timer>();
+        clock.setTimeRemaining(50000f);
         //Turn split screen off/on
         SetSplitSceen(split);
-        PlayerControlToggle(true);
-        //TODO: Some kind of Invoke/Coroutine for the game start 
+        PlayerControlToggle(false);
+        SetScoreGUI(false);
+        barnDoors[0].transform.GetComponent<Animation>().Play("RightDoorOpen");
+        barnDoors[1].transform.GetComponent<Animation>().Play("LeftDoorOpen");
+        //startCam.gameObject.transform.GetComponent<Animation>().Play("StartGame1");
+        
+        state = State.START;
 	}
 
 	void FixedUpdate () {
-        if (Input.GetKeyDown("escape"))
-        {
-            PauseGame(!paused);
-            paused = !paused;
-        }
-        if (!paused) {
-            UpdateTime();
+        GameUpdate();
+    }
 
-            if (Input.GetKeyDown("/"))
-            {
-                SetSplitSceen(split);
-                split = !split;
-            }
-            CheckWin();
+    void GameUpdate()
+    {
+        switch (state) {
+            case State.START:
+                StartGame();
+                break;
+            case State.PLAY:
+                if (Input.GetKeyDown("escape"))
+                {
+                    PauseGame(true);
+                }
+
+                UpdateTime();
+
+                if (Input.GetKeyDown("/"))
+                {
+                    SetSplitSceen(split);
+                    split = !split;
+                }
+                CheckWin();
+                break;
+            case State.PAUSE:
+                if (Input.GetKeyDown("escape"))
+                {
+                    PauseGame(false);
+                }
+                break;
+            case State.GAMEOVER:
+                if (!gameover)
+                {
+                    player1.transform.position = winSpot1;
+                    player1.transform.LookAt(new Vector3(0, 0, 0));
+                    player2.transform.position = winSpot2;
+                    player2.transform.LookAt(new Vector3(0, 0, 0));
+                    SetScoreGUI(false);
+                    PlayerControlToggle(false);
+                    SheepToggle(false);
+                }
+
+                if (winTeam == 1)
+                {
+                    winCam.enabled = true;
+                    winCam.transform.position = Vector3.Lerp(winCam.transform.position, camTarget1, .01f);
+                    playerWinText[0].enabled = true;
+                    textBounce(playerWinText[0]);
+                }
+                else
+                {
+                    winCam2.enabled = true;
+                    winCam2.transform.position = Vector3.Lerp(winCam2.transform.position, camTarget2, .01f);
+                    playerWinText[1].enabled = true;
+                    textBounce(playerWinText[1]);
+                }
+                Invoke("LoadNextScene", 10f);
+                gameover = true;
+                break;
+        }
+    }
+
+    void StartGame()
+    {
+
+        //BARN ANIMATION
+        if (clock.getTimeRemaining() <= 5f)
+        {
+            startCam.transform.GetComponent<Animation>().Play("StartGame2");
+        }
+        if (GetComponent<Timer>().isTimeRemaining() || Input.GetKeyDown("escape"))
+        {
+            startCam.enabled = false;
+            PlayerControlToggle(true);
+            SetScoreGUI(true);
+            state = State.PLAY;
         }
     }
 
@@ -83,12 +155,14 @@ public class Game : MonoBehaviour {
             Time.timeScale = 0;
             PlayerControlToggle(false);
             Cursor.visible = true;
+            state = State.PAUSE;
         }
         else
         {
             Time.timeScale = 1;
             PlayerControlToggle(true);
             Cursor.visible = false;
+            state = State.PLAY;
         }
     }
 
@@ -133,18 +207,31 @@ public class Game : MonoBehaviour {
         //http://answers.unity3d.com/questions/905990/how-can-i-make-a-timer-with-the-new-ui-system.html
         matchTime = Mathf.Clamp(matchTime, 0, matchTime - Time.deltaTime);
 
-        //Divide the guiTime by sixty to get the minutes.
-        var minutes = matchTime / 60;
+        //Divide the time by sixty to get the minutes.
+        var minutes = (matchTime - 30) / 60;
         //Use the euclidean division for the seconds.
-        var seconds = matchTime % 60;
-        var fraction = (matchTime * 100) % 100;
-
+        var seconds = (matchTime - 30) % 60;
+        var fraction = (matchTime * 10) % 10;
         //update the label value
-        timer.text = string.Format("{0:0}:{1:00}", minutes, seconds, fraction);
-        if (matchTime - (int)matchTime <= 0.01f)
+        string temp = string.Format("{0:0}:{1:00}", minutes, seconds, fraction);
+        string sec1 = temp[2].ToString();
+        string sec2 = temp[3].ToString();
+        if (sec1 == "6")
+        {
+            sec1 = "0";
+        }
+        timer[0].text = temp[0].ToString();
+        timer[1].text = temp[1].ToString();
+        timer[2].text = sec1;
+        timer[3].text = sec2;
+        
+        if (sec1 == "0" && temp[0].ToString() == "0")
         {
             //timer.GetComponent<Animation>().wrapMode = WrapMode.Loop;
-            timer.GetComponent<Animation>().Play();
+            //timer[0].GetComponent<Animation>().Play();
+            //timer[1].GetComponent<Animation>().Play();
+            //timer[2].GetComponent<Animation>().Play();
+            //timer[3].GetComponent<Animation>().Play();
         }
     }
 
@@ -163,7 +250,8 @@ public class Game : MonoBehaviour {
         else
         {
             score2 = Mathf.Clamp(score2 + amt, 0, score2 + amt);
-            playerScoreText[1].text = "" + score2;
+            if (split)
+                playerScoreText[1].text = "" + score2;
             textBounce(playerScoreText[1]);
         }
     }
@@ -182,7 +270,7 @@ public class Game : MonoBehaviour {
     /// </summary>
     public void CheckWin()
     {
-        if (matchTime <= 0 || score1 == scoreMax || score2 == scoreMax)
+        if (matchTime <= 30 || score1 == scoreMax || score2 == scoreMax)
         {
             if (!gameover)
             {
@@ -198,64 +286,32 @@ public class Game : MonoBehaviour {
                     winTeam = 2;
                 }
             }
-            GameOver(winTeam);
+            state = State.GAMEOVER;
         }
     }
 
     private void LoadNextScene()
     {
-        if (nextScene != "")
+        if (menu != "")
         {
-            SceneManager.LoadScene(nextScene);
+            SceneManager.LoadScene(menu);
         } else
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 
-    /// <summary>
-    /// End Game handling
-    /// </summary>
-    /// <param name="winTeam"></param> 1 for team 1, 2 for 2
-    void GameOver(int winTeam)
+    void SetScoreGUI(bool b)
     {
-        if (!gameover)
-        {
-            player1.transform.position = winSpot1;
-            player1.transform.LookAt(new Vector3(0, 0, 0));
-            player2.transform.position = winSpot2;
-            player2.transform.LookAt(new Vector3(0, 0, 0));
-            DisableScoreGUI();
-            PlayerControlToggle(false);
-            SheepToggle(false);
-        }
-
-        if (winTeam == 1)
-        {
-            winCam.enabled = true;
-            winCam.transform.position = Vector3.Lerp(winCam.transform.position, camTarget1, .01f);
-            playerWinText[0].enabled = true;
-            textBounce(playerWinText[0]);
-        }
-        else
-        {
-            winCam2.enabled = true;
-            winCam2.transform.position = Vector3.Lerp(winCam2.transform.position, camTarget2, .01f);
-            playerWinText[1].enabled = true;
-            textBounce(playerWinText[1]);
-        }
-        Invoke("LoadNextScene", 30f);
-        gameover = true;
-    }
-
-    void DisableScoreGUI()
-    {
-        scoreGUI[0].enabled = false;
-        scoreGUI[1].enabled = false;
-        scoreGUI[2].enabled = false;
-        playerScoreText[0].enabled = false;
-        playerScoreText[1].enabled = false;
-        timer.enabled = false;
+        scoreGUI[0].enabled = b;
+        scoreGUI[1].enabled = b;
+        scoreGUI[2].enabled = b;
+        playerScoreText[0].enabled = b;
+        playerScoreText[1].enabled = b;
+        timer[0].enabled = b;
+        timer[1].enabled = b;
+        timer[2].enabled = b;
+        timer[3].enabled = b;
     }
 
     /// <summary>
@@ -269,13 +325,14 @@ public class Game : MonoBehaviour {
             cam.fieldOfView = 70;
             cam2.pixelRect = new Rect(0, 0, 0, 0);
             scoreGUI[1].enabled = false;
-            //playerScoreText[1].enabled = false;
+            playerScoreText[1].enabled = false;
         } else {
             cam.pixelRect = new Rect(0, Screen.height / 2, Screen.width, Screen.height / 2);
             cam.fieldOfView = 50;
             cam2.pixelRect = new Rect(0, 0, Screen.width, Screen.height / 2);
             scoreGUI[1].enabled = true;
-            //playerScoreText[1].enabled = true;
+            playerScoreText[1].enabled = true;
+            playerScoreText[1].text = "" + score2;
         }
     }
 
@@ -286,4 +343,6 @@ public class Game : MonoBehaviour {
     {
         Debug.Log("The score is Sheperds 1: " + score1 + " Shpepherds 2: " + score2);
     }
+
+    private enum State {START, PLAY, PAUSE, GAMEOVER};
 }
