@@ -68,7 +68,7 @@ public class Game : MonoBehaviour {
         state = State.START;
 	}
 
-	void FixedUpdate () {
+	void Update () {
         GameUpdate();
     }
 
@@ -79,11 +79,6 @@ public class Game : MonoBehaviour {
                 StartGame();
                 break;
             case State.PLAY:
-                if (Input.GetKeyDown("escape"))
-                {
-                    PauseGame(true);
-                }
-
                 UpdateTime();
 
                 if (Input.GetKeyDown("/"))
@@ -91,6 +86,11 @@ public class Game : MonoBehaviour {
                     SetSplitSceen(split);
                     split = !split;
                 }
+                if (Input.GetKeyDown("escape"))
+                {
+                    PauseGame(true);
+                }
+                
                 CheckWin();
                 break;
             case State.PAUSE:
@@ -126,6 +126,7 @@ public class Game : MonoBehaviour {
                     textBounce(playerWinText[1]);
                 }
                 Invoke("LoadNextScene", 10f);
+                Invoke("CloseDoors", 9.65f);
                 gameover = true;
                 break;
         }
@@ -133,7 +134,6 @@ public class Game : MonoBehaviour {
 
     void StartGame()
     {
-
         //BARN ANIMATION
         if (clock.getTimeRemaining() <= 5f)
         {
@@ -290,8 +290,17 @@ public class Game : MonoBehaviour {
         }
     }
 
+    private void CloseDoors()
+    {
+        playerWinText[0].enabled = false;
+        playerWinText[1].enabled = false;
+        barnDoors[0].transform.GetComponent<Animation>().Play("RightDoorClose");
+        barnDoors[1].transform.GetComponent<Animation>().Play("LeftDoorClose");
+    }
+
     private void LoadNextScene()
     {
+        
         if (menu != "")
         {
             SceneManager.LoadScene(menu);
@@ -321,6 +330,7 @@ public class Game : MonoBehaviour {
     void SetSplitSceen(bool split)
     { 
         if (!split) {
+            //Andrew Oliveira Was Here o/
             cam.pixelRect = new Rect(0, 0, Screen.width, Screen.height);
             cam.fieldOfView = 70;
             cam2.pixelRect = new Rect(0, 0, 0, 0);

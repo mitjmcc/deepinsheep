@@ -93,6 +93,18 @@ public class PlayerController : MonoBehaviour
         x += Input.GetAxisRaw("Look Horizontal " + (player)) * lookSpeed * distance * 0.02f * playerControl;
         var trig = Input.GetAxis("Hit " + (player));
 
+        //Camera collision
+        RaycastHit hit;
+        if (Physics.Raycast(model.position,
+            (cam.transform.position - model.position).normalized, out hit, distance)
+            && hit.transform.tag != "Sheep" && hit.transform.tag != "Player")
+        {
+            //cam.transform.position = hit.point /*+ new Vector3(0, 1f, 0)*/;
+            //distance = cam.transform.position.z - hit.point.z;
+        } else
+        {
+            distance = 5.8f;
+        }
         //Calculate the rotation using Euler angles,
         //get distance from player, calculate camera position
         Quaternion rotation = Quaternion.Euler(xRot, x, 0);
@@ -103,14 +115,6 @@ public class PlayerController : MonoBehaviour
         cam.transform.rotation = rotation;
         cam.transform.position = position;
 
-        //Camera collision
-        RaycastHit hit;
-        if (Physics.Raycast(model.position,
-            (cam.transform.position - model.position).normalized, out hit, distance)
-            && hit.transform.tag != "Sheep" && hit.transform.tag != "Terrain")
-        {
-            //cam.transform.position = hit.point + new Vector3(0, 1f, 0);
-        }
         //Player pushes sheep if hit button is pressed
         if (trig > 0)
             hitSheep();
