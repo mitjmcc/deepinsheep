@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TeamUtility.IO;
 
 public class Game : MonoBehaviour {
 
@@ -86,7 +87,7 @@ public class Game : MonoBehaviour {
                     SetSplitSceen(split);
                     split = !split;
                 }
-                if (Input.GetKeyDown("escape"))
+                if (InputManager.GetButtonDown("Pause"))
                 {
                     PauseGame(true);
                 }
@@ -94,7 +95,7 @@ public class Game : MonoBehaviour {
                 CheckWin();
                 break;
             case State.PAUSE:
-                if (Input.GetKeyDown("escape"))
+                if (InputManager.GetButtonDown("Pause"))
                 {
                     PauseGame(false);
                 }
@@ -139,7 +140,7 @@ public class Game : MonoBehaviour {
         {
             startCam.transform.GetComponent<Animation>().Play("StartGame2");
         }
-        if (GetComponent<Timer>().isTimeRemaining() || Input.GetKeyDown("escape"))
+        if (GetComponent<Timer>().isTimeRemaining() || InputManager.GetButtonDown("Pause"))
         {
             startCam.enabled = false;
             PlayerControlToggle(true);

@@ -1,16 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TeamUtility.IO;
 
 public class Corral : MonoBehaviour
 {
     public int team;
 	public SheepExploder scoreEffect;
     public Game game;
-    Stack sheep;   
+    Stack sheep;
+    PlayerID player;
 
     void Start()
     {
         sheep = new Stack(25);
+        if (team == 1)
+            player = PlayerID.One;
+        else
+            player = PlayerID.Two;
     }
 
     /// <summary>
@@ -32,7 +38,7 @@ public class Corral : MonoBehaviour
             ArrangeSheep();
             game.CheckWin();
         }
-        if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayerController>().player + 1 != this.team)
+        if (other.gameObject.tag == "Player" && other.gameObject.GetComponent<PlayerController>().player != player)
         {
             game.Score(team, 1);
             game.getDebugScore();

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using TeamUtility.IO;
 
 /// <summary>
 /// Simple third person controller with sheep wrangling capabilites.
@@ -13,7 +14,8 @@ public class PlayerController : MonoBehaviour
     public float isGroundedDist;
     public float groundStickForce;
 
-    public int player;
+    //public int player;
+    public PlayerID player;
 
     private float groundedTimeout;
     private float airControlTimeout;
@@ -23,7 +25,7 @@ public class PlayerController : MonoBehaviour
 
     int playerControl = 1;
 
-    float lookSpeed = 50;
+    public float lookSpeed = 50;
     float x = 0.0f;
     float dx;
     float dy;
@@ -33,7 +35,6 @@ public class PlayerController : MonoBehaviour
     Camera cam;
     Transform model;
     Vector3 velocity;
-    //Vector3 grav = new Vector3(0, Physics.gravity.y * 2, 0);
 
     void Start()
     {
@@ -55,8 +56,10 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         //Get move inputs and scale the move speed by the axis values
-        dx = Input.GetAxisRaw("Move Vertical " + (player)) * playerControl;
-        dz = Input.GetAxisRaw("Move Horizontal " + (player)) * playerControl;
+        //dx = Input.GetAxisRaw("Move Vertical " + (player)) * playerControl;
+        dx = InputManager.GetAxis("Vertical", player) * playerControl;
+        //dz = Input.GetAxisRaw("Move Horizontal " + (player)) * playerControl;
+        dz = InputManager.GetAxis("Horizontal", player) * playerControl;
         //Project camera direction onto xz-plane
         Vector3 camForward = Vector3.Scale(cam.transform.forward, new Vector3(1, 0, 1)).normalized;
         //Calculate the motion direction vector and scale it by the moveForce
@@ -90,8 +93,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //Get inputs from the camera inputs and the hit button
-        x += Input.GetAxisRaw("Look Horizontal " + (player)) * lookSpeed * distance * 0.02f * playerControl;
-        var trig = Input.GetAxis("Hit " + (player));
+        x += InputManager.GetAxis("LookHorizontal", player) * lookSpeed * distance * 0.02f * playerControl;
+        //var trig = Input.GetAxis("Hit " + (player));
 
         //Camera collision
         RaycastHit hit;
@@ -116,13 +119,13 @@ public class PlayerController : MonoBehaviour
         cam.transform.position = position;
 
         //Player pushes sheep if hit button is pressed
-        if (trig > 0)
-            hitSheep();
+        //if (trig > 0)
+        //    hitSheep();
     }
 
-    public void setPlayerNum(int i)
+    public void setPlayerNum(PlayerID player)
     {
-        player = i;
+        this.player = player;
     }
 
     /// <summary>Set whether the players can move or not</summary>

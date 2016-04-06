@@ -32676,7 +32676,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 121796}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 558cb4f8047dc314181e90653789f0d7, type: 3}
   m_Name: 
@@ -32909,6 +32909,7 @@ MonoBehaviour:
   isGroundedDist: 0.4
   groundStickForce: 3
   player: 0
+  lookSpeed: 25
 --- !u!114 &11424326
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33061,7 +33062,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 134004}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 558cb4f8047dc314181e90653789f0d7, type: 3}
   m_Name: 
@@ -33372,6 +33373,7 @@ MonoBehaviour:
   isGroundedDist: 0.4
   groundStickForce: 3
   player: 1
+  lookSpeed: 25
 --- !u!114 &11465370
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33422,7 +33424,7 @@ MonoBehaviour:
   - {fileID: 11446982}
   - {fileID: 11425642}
   cursor: {fileID: 2800000, guid: b409604a3352fdb419f69393a77c7732, type: 3}
-  matchTime: 60
+  matchTime: 230
   scoreMax: 10
 --- !u!114 &11482330
 MonoBehaviour:
