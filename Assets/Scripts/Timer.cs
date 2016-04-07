@@ -2,7 +2,6 @@
 
 public class Timer : MonoBehaviour {
 
-    private float targetTime = 60.0f;
     public float timeRemaining = 10.0f;
     private bool isStillCountingDown = false;
     bool paused;
@@ -18,7 +17,7 @@ public class Timer : MonoBehaviour {
 	
     public void setTimeRemaining(float aFloat)
     {
-        targetTime = aFloat;
+        timeRemaining = aFloat;
     }
     
     public float getTimeRemaining ()

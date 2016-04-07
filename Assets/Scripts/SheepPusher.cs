@@ -37,9 +37,9 @@ public class SheepPusher : MonoBehaviour {
 			targetSheep = null;
 			return;
 		}
-		float dampenFactor = 1.0f;
-		if(this.dampenRadius > 0) //Prevents divide by zero
-			dampenFactor = Mathf.Clamp01(Vector3.Distance(targetSheep.position, targetPoint) / this.dampenRadius); //Reduces force when sheep is near target point
+		//float dampenFactor = 1.0f;
+		//if(this.dampenRadius > 0) //Prevents divide by zero
+		//	dampenFactor = Mathf.Clamp01(Vector3.Distance(targetSheep.position, targetPoint) / this.dampenRadius); //Reduces force when sheep is near target point
 		Vector3 dir = (targetPoint - targetSheep.position).normalized;
 		float mag = this.appliedForce * this.GetComponent<Rigidbody>().velocity.magnitude;// * Time.fixedDeltaTime;
 		this.targetSheep.AddForce(dir * mag);

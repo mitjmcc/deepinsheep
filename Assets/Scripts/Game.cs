@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TeamUtility.IO;
 
-public class Game : MonoBehaviour {
+public class Game : MonoBehaviour
+{
 
     public GameObject players, corrals;
     public string menu;
@@ -26,21 +27,24 @@ public class Game : MonoBehaviour {
     GameObject player1, player2;
     Timer clock;
     int score1, score2, winTeam;
-    bool split, gameover;
+    bool split, control, gameover;
     string nextScene;
     private static Game instance;
 
     private Game() { }
 
-    public static Game inst {
-        get {
+    public static Game inst
+    {
+        get
+        {
             if (instance == null)
                 instance = new Game();
             return inst;
         }
     }
 
-	void Start() {
+    void Start()
+    {
         //Set cursor to not show and to the custom cursor
         Cursor.visible = false;
         Cursor.SetCursor(cursor, new Vector2(0, 0), CursorMode.ForceSoftware);
@@ -59,29 +63,40 @@ public class Game : MonoBehaviour {
         clock = GetComponent<Timer>();
         clock.setTimeRemaining(50000f);
         //Turn split screen off/on
+        split = true;
         SetSplitSceen(split);
+        //Set control scheme
+        control = true;
+        SetControllers(control);
+        //Players
         PlayerControlToggle(false);
+        //Opening animations
         SetScoreGUI(false);
         barnDoors[0].transform.GetComponent<Animation>().Play("RightDoorOpen");
         barnDoors[1].transform.GetComponent<Animation>().Play("LeftDoorOpen");
         //startCam.gameObject.transform.GetComponent<Animation>().Play("StartGame1");
-        
         state = State.START;
-	}
+    }
 
-	void Update () {
+    void Update()
+    {
         GameUpdate();
     }
 
     void GameUpdate()
     {
-        switch (state) {
+        switch (state)
+        {
             case State.START:
                 StartGame();
                 break;
             case State.PLAY:
                 UpdateTime();
-
+                if (Input.GetKeyDown("."))
+                {
+                    SetControllers(control);
+                    control = !control;
+                }
                 if (Input.GetKeyDown("/"))
                 {
                     SetSplitSceen(split);
@@ -91,7 +106,7 @@ public class Game : MonoBehaviour {
                 {
                     PauseGame(true);
                 }
-                
+
                 CheckWin();
                 break;
             case State.PAUSE:
@@ -179,7 +194,8 @@ public class Game : MonoBehaviour {
             {
                 player.setPlayerControl(1);
             }
-        } else
+        }
+        else
         {
             foreach (PlayerController player in players.GetComponentsInChildren<PlayerController>())
             {
@@ -225,7 +241,7 @@ public class Game : MonoBehaviour {
         timer[1].text = temp[1].ToString();
         timer[2].text = sec1;
         timer[3].text = sec2;
-        
+
         if (sec1 == "0" && temp[0].ToString() == "0")
         {
             //timer.GetComponent<Animation>().wrapMode = WrapMode.Loop;
@@ -241,7 +257,8 @@ public class Game : MonoBehaviour {
     /// increment there score
     /// </summary>
     /// <param name="team"></param> True for team 1, false for team 2
-    public void Score(int team, int amt) {
+    public void Score(int team, int amt)
+    {
         if (team == 1)
         {
             score1 = Mathf.Clamp(score1 + amt, 0, score1 + amt);
@@ -301,11 +318,12 @@ public class Game : MonoBehaviour {
 
     private void LoadNextScene()
     {
-        
+
         if (menu != "")
         {
             SceneManager.LoadScene(menu);
-        } else
+        }
+        else
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
@@ -329,21 +347,36 @@ public class Game : MonoBehaviour {
     /// </summary>
     /// <param name="split"></param> Splitscreen or not
     void SetSplitSceen(bool split)
-    { 
-        if (!split) {
+    {
+        if (!split)
+        {
             //Andrew Oliveira Was Here o/
             cam.pixelRect = new Rect(0, 0, Screen.width, Screen.height);
             cam.fieldOfView = 70;
             cam2.pixelRect = new Rect(0, 0, 0, 0);
             scoreGUI[1].enabled = false;
             playerScoreText[1].enabled = false;
-        } else {
+        }
+        else {
             cam.pixelRect = new Rect(0, Screen.height / 2, Screen.width, Screen.height / 2);
             cam.fieldOfView = 50;
             cam2.pixelRect = new Rect(0, 0, Screen.width, Screen.height / 2);
             scoreGUI[1].enabled = true;
             playerScoreText[1].enabled = true;
             playerScoreText[1].text = "" + score2;
+        }
+    }
+
+    void SetControllers(bool b)
+    {
+        if (b)
+        {
+            InputManager.SetInputConfiguration("KeyboardAndMouse", PlayerID.One);
+            InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.Two);
+        }
+        else {
+            InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.One);
+            InputManager.SetInputConfiguration("Windows_Gamepad2", PlayerID.Two);
         }
     }
 
@@ -355,5 +388,5 @@ public class Game : MonoBehaviour {
         Debug.Log("The score is Sheperds 1: " + score1 + " Shpepherds 2: " + score2);
     }
 
-    private enum State {START, PLAY, PAUSE, GAMEOVER};
+    private enum State { START, PLAY, PAUSE, GAMEOVER };
 }

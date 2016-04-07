@@ -34,7 +34,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody body;
     Camera cam;
     Transform model;
-    Vector3 velocity;
+    Vector3 velocity, negDistance, position, camForward, spd, desiredVelocity, addVec;
+    Quaternion rotation;
 
     void Start()
     {
@@ -61,13 +62,13 @@ public class PlayerController : MonoBehaviour
         //dz = Input.GetAxisRaw("Move Horizontal " + (player)) * playerControl;
         dz = InputManager.GetAxis("Horizontal", player) * playerControl;
         //Project camera direction onto xz-plane
-        Vector3 camForward = Vector3.Scale(cam.transform.forward, new Vector3(1, 0, 1)).normalized;
+        camForward = Vector3.Scale(cam.transform.forward, new Vector3(1, 0, 1)).normalized;
         //Calculate the motion direction vector and scale it by the moveForce
-        Vector3 spd = Vector3.Normalize(dx * camForward + dz * cam.transform.right) * moveForce * playerControl;
+        spd = Vector3.Normalize(dx * camForward + dz * cam.transform.right) * moveForce * playerControl;
         //Create velocity vector and scale it by the speed
-        Vector3 desiredVelocity = (spd) + new Vector3(0, body.velocity.y, 0);
+        desiredVelocity = (spd) + new Vector3(0, body.velocity.y, 0);
         //Set the velocity to the new velocity
-        Vector3 addVec = desiredVelocity - body.velocity;
+        addVec = desiredVelocity - body.velocity;
         float mag = addVec.magnitude;
         if (this.isOnGround())
             mag = Mathf.Min(mag, moveForce) * playerControl;
@@ -110,14 +111,16 @@ public class PlayerController : MonoBehaviour
         }
         //Calculate the rotation using Euler angles,
         //get distance from player, calculate camera position
-        Quaternion rotation = Quaternion.Euler(xRot, x, 0);
-        Vector3 negDistance = new Vector3(0.0f, height, -distance);
-        Vector3 position = rotation * negDistance + model.position;
+        rotation = Quaternion.Euler(xRot, x, 0);
+        negDistance = new Vector3(0.0f, height, -distance);
+        position = rotation * negDistance + model.position;
 
         //Set the camera's new rotation and position
         cam.transform.rotation = rotation;
         cam.transform.position = position;
-
+        //Fix for camera on player 2 facing wrong direction
+        //cam.transform.localRotation = rotation;
+        //cam.transform.localPosition = position;
         //Player pushes sheep if hit button is pressed
         //if (trig > 0)
         //    hitSheep();

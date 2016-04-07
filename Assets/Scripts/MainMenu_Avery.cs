@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.UI;
+using TeamUtility.IO;
 
 public class MainMenu_Avery : MonoBehaviour {
     //clip that plays when selection changes
@@ -79,8 +80,8 @@ public class MainMenu_Avery : MonoBehaviour {
     //takes in input and decides which menu will take that input
     void FixedUpdate()
     {
-        float verticalInput = Input.GetAxis("Move Vertical 0");
-        float horizontalInput = Input.GetAxis("Move Horizontal 0");
+        float verticalInput = InputManager.GetAxis("Vertical", PlayerID.One);
+        float horizontalInput = InputManager.GetAxis("Horizontal", PlayerID.One);
 
         if (menuActive)
         {
@@ -91,7 +92,7 @@ public class MainMenu_Avery : MonoBehaviour {
                 StartCoroutine(menuSelect(mainMenuButtons, verticalInput));
             }
 
-            if (Input.GetAxis("Hit 0") > 0 && canInteract)
+            if (InputManager.GetAxis("Submit", PlayerID.One) > 0 && canInteract)
             {
                 canInteract = false;
                 StartCoroutine(handleSelectionMain());
@@ -106,7 +107,7 @@ public class MainMenu_Avery : MonoBehaviour {
                 StartCoroutine(menuSelect(mainMenuButtons, verticalInput));
             }
 
-            if (Input.GetAxis("Hit 0") > 0 && canInteract)
+            if (InputManager.GetAxis("Submit", PlayerID.One) > 0 && canInteract)
             {
                 canInteract = false;
                 StartCoroutine(handleSelectionMain());
@@ -123,7 +124,7 @@ public class MainMenu_Avery : MonoBehaviour {
                 StartCoroutine(menuSelect(sceneSelectButtons, -horizontalInput));
             }
 
-            if (Input.GetAxis("Hit 0" ) > 0 && canInteract)
+            if (InputManager.GetAxis("Submit", PlayerID.One) > 0 && canInteract)
             {
                 canInteract = false;
                 StartCoroutine(handleSelectionScene());
