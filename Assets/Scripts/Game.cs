@@ -16,6 +16,7 @@ public class Game : MonoBehaviour
     public Image[] scoreGUI;
     public Image[] barnDoors;
     public Texture2D cursor;
+    public AudioSource music;
 
     public float matchTime;
     public int scoreMax;
@@ -125,6 +126,7 @@ public class Game : MonoBehaviour
                     SetScoreGUI(false);
                     PlayerControlToggle(false);
                     SheepToggle(false);
+                    music.Pause();
                 }
 
                 if (winTeam == 1)
@@ -225,7 +227,7 @@ public class Game : MonoBehaviour
         matchTime = Mathf.Clamp(matchTime, 0, matchTime - Time.deltaTime);
 
         //Divide the time by sixty to get the minutes.
-        var minutes = (matchTime - 30) / 60;
+        var minutes = (matchTime) / 60;
         //Use the euclidean division for the seconds.
         var seconds = (matchTime - 30) % 60;
         var fraction = (matchTime * 10) % 10;
@@ -375,8 +377,8 @@ public class Game : MonoBehaviour
             InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.Two);
         }
         else {
-            InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.One);
             InputManager.SetInputConfiguration("Windows_Gamepad2", PlayerID.Two);
+            InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.One);
         }
     }
 

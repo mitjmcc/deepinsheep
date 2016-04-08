@@ -168,15 +168,15 @@ PlayerSettings:
     height: 180
     banner: {fileID: 0}
   androidGamepadSupportLevel: 0
-  resolutionDialogBanner: {fileID: 2800000, guid: 2b85105ab271bdc4ab37da3f2020c01e,
+  resolutionDialogBanner: {fileID: 2800000, guid: d686a76b8d06b67489a913fc9e3ea19f,
     type: 3}
   m_BuildTargetIcons:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: ad71fe7f824b6ce4090562bc8ebaf9b2, type: 3}
-      m_Width: 0
-      m_Height: 0
+      m_Icon: {fileID: 2800000, guid: cd4d648c837524248bfbd789fac5ca85, type: 3}
+      m_Width: 128
+      m_Height: 128
   m_BuildTargetBatching: []
   m_BuildTargetGraphicsAPIs: []
   webPlayerTemplate: APPLICATION:Default
@@ -333,7 +333,7 @@ PlayerSettings:
   spritePackerPolicy: 
   scriptingDefineSymbols:
     1: CROSS_PLATFORM_INPUT
-    2: CROSS_PLATFORM_INPUT
+    2: 
     4: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     7: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     14: MOBILE_INPUT
