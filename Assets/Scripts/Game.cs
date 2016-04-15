@@ -5,7 +5,6 @@ using TeamUtility.IO;
 
 public class Game : MonoBehaviour
 {
-
     public GameObject players, corrals;
     public string menu;
     public Camera winCam;
@@ -62,20 +61,19 @@ public class Game : MonoBehaviour
         winSpot2 = corrals.transform.GetChild(1).transform.position + new Vector3(-10, 1.07f, 0);
         //Initialize a clock
         clock = GetComponent<Timer>();
-        clock.setTimeRemaining(50000f);
         //Turn split screen off/on
         split = true;
         SetSplitSceen(split);
         //Set control scheme
         control = true;
-        SetControllers(control);
+        SetControllers(false);
         //Players
         PlayerControlToggle(false);
         //Opening animations
         SetScoreGUI(false);
         barnDoors[0].transform.GetComponent<Animation>().Play("RightDoorOpen");
         barnDoors[1].transform.GetComponent<Animation>().Play("LeftDoorOpen");
-        //startCam.gameObject.transform.GetComponent<Animation>().Play("StartGame1");
+        startCam.gameObject.transform.GetComponent<Animation>().Play("StartGame1");
         state = State.START;
     }
 
@@ -89,6 +87,7 @@ public class Game : MonoBehaviour
         switch (state)
         {
             case State.START:
+                Cursor.visible = false;
                 StartGame();
                 break;
             case State.PLAY:
@@ -136,12 +135,19 @@ public class Game : MonoBehaviour
                     playerWinText[0].enabled = true;
                     textBounce(playerWinText[0]);
                 }
-                else
+                else if (winTeam == 2)
                 {
                     winCam2.enabled = true;
                     winCam2.transform.position = Vector3.Lerp(winCam2.transform.position, camTarget2, .01f);
                     playerWinText[1].enabled = true;
                     textBounce(playerWinText[1]);
+                } else
+                {
+                    winCam.enabled = true;
+                    winCam.transform.position = Vector3.Lerp(winCam.transform.position, camTarget1, .01f);
+                    playerWinText[0].enabled = true;
+                    playerWinText[0].text = "Tie!";
+                    textBounce(playerWinText[0]);
                 }
                 Invoke("LoadNextScene", 10f);
                 Invoke("CloseDoors", 9.65f);
@@ -290,19 +296,17 @@ public class Game : MonoBehaviour
     /// </summary>
     public void CheckWin()
     {
-        if (matchTime <= 30 || score1 == scoreMax || score2 == scoreMax)
+        if (matchTime <= 30 || score1 >= scoreMax || score2 >= scoreMax)
         {
-            if (!gameover)
+            if (!(state == State.GAMEOVER))
             {
-                if (score1 >= scoreMax || score1 > score2)
+                if (score1 > score2)
                 {
-                    Debug.Log("Team2 1 wins! Game over!");
                     winTeam = 1;
 
                 }
-                else if (score2 >= scoreMax || score1 < score2)
+                else if (score1 < score2)
                 {
-                    Debug.Log("Team 2 wins! Game over!");
                     winTeam = 2;
                 }
             }

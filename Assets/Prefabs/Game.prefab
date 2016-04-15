@@ -4059,6 +4059,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &124280
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 441248}
+  - 114: {fileID: 11484480}
+  - 82: {fileID: 8247254}
+  m_Layer: 0
+  m_Name: Settings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &124318
 GameObject:
   m_ObjectHideFlags: 1
@@ -11029,22 +11046,6 @@ GameObject:
   - 4: {fileID: 436962}
   m_Layer: 0
   m_Name: MCH-shin.ik.R_end
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &170898
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 499212}
-  - 82: {fileID: 8293668}
-  m_Layer: 0
-  m_Name: Audio Source
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19465,7 +19466,7 @@ Transform:
   - {fileID: 445060}
   - {fileID: 453968}
   - {fileID: 412908}
-  - {fileID: 499212}
+  - {fileID: 441248}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &432340
@@ -20690,6 +20691,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 419422}
   m_RootOrder: 0
+--- !u!4 &441248
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 124280}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.309056, y: 5.917681, z: 178.99837}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 432338}
+  m_RootOrder: 5
 --- !u!4 &441410
 Transform:
   m_ObjectHideFlags: 1
@@ -28103,18 +28116,6 @@ Transform:
   - {fileID: 486314}
   m_Father: {fileID: 405888}
   m_RootOrder: 0
---- !u!4 &499212
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 170898}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -53.033928, y: 7.443218, z: 115.53394}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 432338}
-  m_RootOrder: 5
 --- !u!4 &499438
 Transform:
   m_ObjectHideFlags: 1
@@ -32470,18 +32471,18 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 136560}
   m_Enabled: 0
---- !u!82 &8293668
+--- !u!82 &8247254
 AudioSource:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 170898}
+  m_GameObject: {fileID: 124280}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 1da65c16b26c60e41a8efd7c89065410, type: 3}
-  m_PlayOnAwake: 1
-  m_Volume: 0.03
+  m_PlayOnAwake: 0
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -34048,7 +34049,7 @@ MonoBehaviour:
   - {fileID: 11446982}
   - {fileID: 11425642}
   cursor: {fileID: 2800000, guid: b409604a3352fdb419f69393a77c7732, type: 3}
-  music: {fileID: 8293668}
+  music: {fileID: 8247254}
   matchTime: 210
   scoreMax: 10
 --- !u!114 &11482330
@@ -34065,6 +34066,18 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1.5, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &11484480
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 124280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4ec9a5149c6c64a8fc876510f793e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelMusic: {fileID: 124280}
 --- !u!114 &11486052
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -38516,7 +38529,11 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Volume
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 127448}

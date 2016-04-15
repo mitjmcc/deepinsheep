@@ -12,6 +12,7 @@ public class MainMenu_Avery : MonoBehaviour {
     //buttons that make up the two menus
     public Button[] mainMenuButtons;
     public Button[] sceneSelectButtons;
+    public Button[] optionsButtons;
 
     //the button in which is currently selected of the current list
     private int selectedIndex;
@@ -19,14 +20,29 @@ public class MainMenu_Avery : MonoBehaviour {
     //canInteract - variable that helps keep a delay in between selections
     //menuActive - if true, input selects options of the main menu
     //sceneActive - if true, input selects options of the scene selection menu
+    //optionsActive - if true, input selects optionsMenu
     private bool canInteract;
     private bool menuActive;
     private bool sceneActive;
     private bool optionsActive;
+    private bool tutorialActive;
+    private bool creditsActive;
+
+    private static bool musicSound;
+    private static bool fxSound;
+
     //canvas in worldspace in which buttons apear
     public GameObject mainMenuCanvas;
     public GameObject sceneSelectCanvas;
     public GameObject optionsmenuCanvas;
+    public GameObject creditsMenu;
+
+    public AudioSource music;
+
+    public GameObject musicCheck;
+    public GameObject fxCheck;
+
+    public PlayerID player;
 
     //objects references for animation purposes
     public GameObject barn;
@@ -36,11 +52,39 @@ public class MainMenu_Avery : MonoBehaviour {
     void Start()
     {
         optionsmenuCanvas.SetActive(false);
+        creditsMenu.SetActive(false);
+        creditsActive = false;
         menuActive = true;
         sceneActive = false;
         optionsActive = false;
+        tutorialActive = false;
         canInteract = true;
         selectedIndex = 0;
+        musicSound = true;
+        fxSound = true;
+        music.ignoreListenerVolume = true;
+        InputManager.SetInputConfiguration("Windows_Gamepad2", PlayerID.Two);
+        InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.One);
+    }
+
+    public static bool getMusicSound()
+    {
+        return musicSound;
+    }
+
+    public static bool getFXSound()
+    {
+        return fxSound;
+    }
+
+    public void setMusicSound(bool newMusicSound)
+    {
+        musicSound = newMusicSound;
+    }
+
+    public void setFXSound(bool newFXSound)
+    {
+        fxSound = newFXSound;
     }
 
     //this method is responsible for changing the index of the current menu.
@@ -50,6 +94,7 @@ public class MainMenu_Avery : MonoBehaviour {
     {
         AudioSource.PlayClipAtPoint(switchButtonSound, Camera.main.transform.position);
         buttons[selectedIndex].GetComponent<Animation>().Stop();
+        buttons[selectedIndex].GetComponent<Animation>().Play("idleButton");
 
         if (selectedInput > 0)
         {
@@ -72,7 +117,7 @@ public class MainMenu_Avery : MonoBehaviour {
             }
 
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
         canInteract = true;
     }
 
@@ -80,8 +125,8 @@ public class MainMenu_Avery : MonoBehaviour {
     //takes in input and decides which menu will take that input
     void FixedUpdate()
     {
-        float verticalInput = InputManager.GetAxis("Vertical", PlayerID.One);
-        float horizontalInput = InputManager.GetAxis("Horizontal", PlayerID.One);
+        float verticalInput = InputManager.GetAxis("Vertical", player);
+        float horizontalInput = InputManager.GetAxis("Horizontal", player);
 
         if (menuActive)
         {
@@ -92,7 +137,7 @@ public class MainMenu_Avery : MonoBehaviour {
                 StartCoroutine(menuSelect(mainMenuButtons, verticalInput));
             }
 
-            if (InputManager.GetAxis("Submit", PlayerID.One) > 0 && canInteract)
+            if (InputManager.GetButton("Submit") && canInteract)
             {
                 canInteract = false;
                 StartCoroutine(handleSelectionMain());
@@ -101,19 +146,41 @@ public class MainMenu_Avery : MonoBehaviour {
 
         if (optionsActive)
         {
+            optionsButtons[selectedIndex].GetComponent<Animation>().Play();
             if (verticalInput != 0 && canInteract)
             {
                 canInteract = false;
-                StartCoroutine(menuSelect(mainMenuButtons, verticalInput));
+                StartCoroutine(menuSelect(optionsButtons, verticalInput));
             }
 
-            if (InputManager.GetAxis("Submit", PlayerID.One) > 0 && canInteract)
+            if (InputManager.GetButton("Submit") && canInteract)
             {
                 canInteract = false;
-                StartCoroutine(handleSelectionMain());
+                StartCoroutine(handleSelectionOptions());
             }
 
-            mainMenuButtons[selectedIndex].GetComponent<Animator>().SetTrigger("menuSwitch");
+        }
+
+        if (tutorialActive)
+        {
+            if (InputManager.GetButton("Submit") && canInteract)
+            {
+                canInteract = false;
+                selectedIndex++;
+                StartCoroutine(handleSelectionTutorial());
+            }
+        }
+
+        if (creditsActive)
+        {
+            if (InputManager.GetButton("Submit") && canInteract)
+            {
+                selectedIndex = 0;
+                optionsActive = true;
+                optionsmenuCanvas.SetActive(true);
+                creditsMenu.SetActive(false);
+                creditsActive = false;
+            }
         }
 
         if (sceneActive)
@@ -124,7 +191,7 @@ public class MainMenu_Avery : MonoBehaviour {
                 StartCoroutine(menuSelect(sceneSelectButtons, -horizontalInput));
             }
 
-            if (InputManager.GetAxis("Submit", PlayerID.One) > 0 && canInteract)
+            if (InputManager.GetButton("Submit") && canInteract)
             {
                 canInteract = false;
                 StartCoroutine(handleSelectionScene());
@@ -138,7 +205,7 @@ public class MainMenu_Avery : MonoBehaviour {
     IEnumerator handleSelectionMain()
     {
         AudioSource.PlayClipAtPoint(SelectSound, Camera.main.transform.position);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
         canInteract = true;
         switch (selectedIndex)
         {
@@ -160,6 +227,57 @@ public class MainMenu_Avery : MonoBehaviour {
 
     }
 
+    IEnumerator handleSelectionTutorial()
+    {
+        AudioSource.PlayClipAtPoint(SelectSound, Camera.main.transform.position);
+        yield return new WaitForSeconds(0.4f);
+        canInteract = true;
+        switch (selectedIndex)
+        {
+            case 0:
+                break;
+            case 1:
+                cameraController.GetComponent<Animator>().Play("frame1_2Tutorial");
+                break;
+            case 2:
+                cameraController.GetComponent<Animator>().Play("fraame2_3Tutorial");
+                break;
+            case 3:
+                cameraController.GetComponent<Animator>().Play("tutorialExit");
+                menuActive = true;
+                tutorialActive = false;
+                selectedIndex = 0;
+                break;
+            default:
+                break;
+        }
+    }
+
+    IEnumerator handleSelectionOptions()
+    {
+        AudioSource.PlayClipAtPoint(SelectSound, Camera.main.transform.position);
+        yield return new WaitForSeconds(0.4f);
+        canInteract = true;
+        switch (selectedIndex)
+        {
+            case 0:
+                fxToggle();
+                break;
+            case 1:
+                musicToggle();
+                break;
+            case 2:
+                credits();
+                break;
+            case 3:
+                optionsBack();
+                break;
+            default:
+                break;
+        }
+
+    }
+
     //method envolked when play button is selected. triggers animation to the
     // barn and camera. sets input to scene selection menu. 
     void PlayGame()
@@ -172,23 +290,36 @@ public class MainMenu_Avery : MonoBehaviour {
         barn.GetComponent<Animator>().Play("BarnDoors");
     }
 
+    void credits()
+    {
+        optionsActive = false;
+        optionsmenuCanvas.SetActive(false);
+        creditsMenu.SetActive(true);
+        creditsActive = true;
+        //yield return new WaitForSeconds(0.4f);
+
+    }
+
     //handles input in the scene selection menu depending on button
     IEnumerator handleSelectionScene()
     {
         AudioSource.PlayClipAtPoint(SelectSound, Camera.main.transform.position);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
         canInteract = true;
 
         switch (selectedIndex)
         {
             case 0:
                 SceneManager.LoadScene("RollingHills");
+                music.Stop();
                 break;
             case 1:
-                SceneManager.LoadScene(2);
+                SceneManager.LoadScene("Mountains");
+                music.Stop();
                 break;
             case 2:
-                SceneManager.LoadScene(3);
+                SceneManager.LoadScene("RoadMap");
+                music.Stop();
                 break;
             case 3:
                 BackToMenu();
@@ -211,7 +342,12 @@ public class MainMenu_Avery : MonoBehaviour {
 
     void StartTutorial()
     {
-
+        menuActive = false;
+        tutorialActive = true;
+        selectedIndex = 0;
+        cameraController.GetComponent<Animator>().Play("enterTutorial");
+        mainMenuButtons[1].GetComponent<Animation>().Stop();
+        mainMenuButtons[1].GetComponent<Animation>().Play("idleButton");
     }
 
     //not finished, but gives an idea of what to come
@@ -219,9 +355,55 @@ public class MainMenu_Avery : MonoBehaviour {
     {
         menuActive = false;
         optionsActive = true;
+        selectedIndex = 0;
         mainMenuCanvas.SetActive(false);
         cameraController.GetComponent<Animator>().Play("menuSwitch");
         optionsmenuCanvas.SetActive(true);
+    }
+
+    void musicToggle()
+    {
+        if (musicSound == true)
+        {
+            musicCheck.SetActive(false);
+            musicSound = false;
+            music.volume = 0;
+
+        }
+        else if (musicSound == false)
+        {
+            musicCheck.SetActive(true);
+            musicSound = true;
+            music.volume = 1;
+
+        }
+    }
+
+    void fxToggle()
+    {
+        if (fxSound == true)
+        {
+            fxCheck.SetActive(false);
+            fxSound = false;
+            AudioListener.volume = 0;
+        }
+        else if (fxSound == false)
+        {
+            fxCheck.SetActive(true);
+            fxSound = true;
+            AudioListener.volume = 1;
+
+        }
+    }
+
+    void optionsBack()
+    {
+        menuActive = true;
+        optionsActive = false;
+        optionsmenuCanvas.SetActive(false);
+        cameraController.GetComponent<Animator>().Play("menuSwitch");
+        mainMenuCanvas.SetActive(true);
+        selectedIndex = 0;
     }
 
     //selected when quit is selected and exits the application
