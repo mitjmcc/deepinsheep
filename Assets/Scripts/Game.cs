@@ -27,7 +27,7 @@ public class Game : MonoBehaviour
     GameObject player1, player2;
     Timer clock;
     int score1, score2, winTeam;
-    bool split, control, gameover;
+    bool gameover;
     string nextScene;
     private static Game instance;
 
@@ -62,11 +62,9 @@ public class Game : MonoBehaviour
         //Initialize a clock
         clock = GetComponent<Timer>();
         //Turn split screen off/on
-        split = true;
-        SetSplitSceen(split);
+        //SetSplitSceen(false);
         //Set control scheme
-        control = true;
-        SetControllers(false);
+        //SetControllers(true);
         //Players
         PlayerControlToggle(false);
         //Opening animations
@@ -92,16 +90,6 @@ public class Game : MonoBehaviour
                 break;
             case State.PLAY:
                 UpdateTime();
-                if (Input.GetKeyDown("."))
-                {
-                    SetControllers(control);
-                    control = !control;
-                }
-                if (Input.GetKeyDown("/"))
-                {
-                    SetSplitSceen(split);
-                    split = !split;
-                }
                 if (InputManager.GetButtonDown("Pause"))
                 {
                     PauseGame(true);
@@ -276,8 +264,7 @@ public class Game : MonoBehaviour
         else
         {
             score2 = Mathf.Clamp(score2 + amt, 0, score2 + amt);
-            if (split)
-                playerScoreText[1].text = "" + score2;
+            playerScoreText[1].text = "" + score2;
             textBounce(playerScoreText[1]);
         }
     }

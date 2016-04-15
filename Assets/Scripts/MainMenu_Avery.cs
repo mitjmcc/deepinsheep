@@ -30,6 +30,7 @@ public class MainMenu_Avery : MonoBehaviour {
 
     private static bool musicSound;
     private static bool fxSound;
+    private static bool controllers;
 
     //canvas in worldspace in which buttons apear
     public GameObject mainMenuCanvas;
@@ -41,12 +42,15 @@ public class MainMenu_Avery : MonoBehaviour {
 
     public GameObject musicCheck;
     public GameObject fxCheck;
+    public GameObject ctrlrCheck;
 
     public PlayerID player;
 
     //objects references for animation purposes
     public GameObject barn;
     public GameObject cameraController;
+
+    bool newListener;
 
     //runs on startup
     void Start()
@@ -63,8 +67,7 @@ public class MainMenu_Avery : MonoBehaviour {
         musicSound = true;
         fxSound = true;
         music.ignoreListenerVolume = true;
-        InputManager.SetInputConfiguration("Windows_Gamepad2", PlayerID.Two);
-        InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.One);
+        newListener = true;
     }
 
     public static bool getMusicSound()
@@ -77,6 +80,11 @@ public class MainMenu_Avery : MonoBehaviour {
         return fxSound;
     }
 
+    public static bool getControllers()
+    {
+        return controllers;
+    }
+
     public void setMusicSound(bool newMusicSound)
     {
         musicSound = newMusicSound;
@@ -85,6 +93,11 @@ public class MainMenu_Avery : MonoBehaviour {
     public void setFXSound(bool newFXSound)
     {
         fxSound = newFXSound;
+    }
+
+    public void setControllers(bool newControllers)
+    {
+        controllers = newControllers;
     }
 
     //this method is responsible for changing the index of the current menu.
@@ -130,16 +143,25 @@ public class MainMenu_Avery : MonoBehaviour {
 
         if (menuActive)
         {
+            if (newListener)
+            {
+                Debug.Log("age");
+                mainMenuButtons[selectedIndex].onClick.AddListener(delegate { StartCoroutine(handleSelectionMain()); Debug.Log("Gello"); });
+                newListener = false;
+            }
             mainMenuButtons[selectedIndex].GetComponent<Animation>().Play();
             if (verticalInput != 0 && canInteract)
             {
                 canInteract = false;
+                newListener = true;
                 StartCoroutine(menuSelect(mainMenuButtons, verticalInput));
             }
 
             if (InputManager.GetButton("Submit") && canInteract)
             {
                 canInteract = false;
+                mainMenuButtons[selectedIndex].onClick.RemoveAllListeners();
+                newListener = true;
                 StartCoroutine(handleSelectionMain());
             }
         }
@@ -267,9 +289,12 @@ public class MainMenu_Avery : MonoBehaviour {
                 musicToggle();
                 break;
             case 2:
-                credits();
+                ctrlrToggle();
                 break;
             case 3:
+                credits();
+                break;
+            case 4:
                 optionsBack();
                 break;
             default:
@@ -393,6 +418,24 @@ public class MainMenu_Avery : MonoBehaviour {
             fxSound = true;
             AudioListener.volume = 1;
 
+        }
+    }
+
+    void ctrlrToggle()
+    {
+        if (controllers == true)
+        {
+            ctrlrCheck.SetActive(false);
+            controllers = false;
+            InputManager.SetInputConfiguration("Windows_Gamepad2", PlayerID.Two);
+            InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.One);
+        }
+        else
+        {
+            ctrlrCheck.SetActive(true);
+            controllers = true;
+            InputManager.SetInputConfiguration("KeyboardAndMouse", PlayerID.One);
+            InputManager.SetInputConfiguration("Windows_Gamepad1", PlayerID.Two);
         }
     }
 
